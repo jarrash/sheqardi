@@ -3,9 +3,6 @@ import {
   Box,
   Stack,
   Typography,
-  Card,
-  CardContent,
-  Grid,
   Select,
   MenuItem,
   FormControl,
@@ -36,6 +33,7 @@ import { useAuth } from "../../../application/hooks/useAuth";
 import allowedRoles from "../../../application/constants/permissions";
 import { PROVIDERS } from "../../utils/providers";
 import { palette } from "../../themes/palette";
+import ProviderPicker from "../../components/Inputs/ProviderPicker";
 
 // Import provider logos
 import { ReactComponent as OpenAILogo } from "../../assets/icons/openai_logo.svg";
@@ -462,108 +460,13 @@ export default function ModelsPage({ orgId, openAddModal, onAddModalConsumed }: 
         ) : (
           <Stack spacing={4}>
             {/* Provider Selection */}
-            <Box>
-              <Typography
-                sx={{ mb: 2.5, fontSize: "14px", fontWeight: 500, color: palette.text.secondary }}
-              >
-                Model provider
-              </Typography>
-              <Grid container spacing={1.5}>
-                {MODEL_PROVIDERS.map((provider) => {
-                  const { Logo } = provider;
-                  const isSelected = newModel.accessMethod === provider.id;
-
-                  return (
-                    <Grid size={{ xs: 4, sm: 3 }} key={provider.id}>
-                      <Card
-                        onClick={() =>
-                          setNewModel((prev) => ({
-                            ...prev,
-                            accessMethod: provider.id,
-                            modelName: "",
-                          }))
-                        }
-                        sx={{
-                          "cursor": "pointer",
-                          "border": "1px solid",
-                          "borderColor": isSelected ? palette.brand.primary : palette.border.dark,
-                          "backgroundColor": palette.background.main,
-                          "boxShadow": "none",
-                          "transition": "all 0.2s ease",
-                          "position": "relative",
-                          "height": "100%",
-                          "&:hover": {
-                            borderColor: palette.brand.primary,
-                            boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
-                          },
-                        }}
-                      >
-                        <CardContent
-                          sx={{
-                            "textAlign": "center",
-                            "py": 3,
-                            "px": 2,
-                            "height": "100%",
-                            "display": "flex",
-                            "flexDirection": "column",
-                            "alignItems": "center",
-                            "justifyContent": "center",
-                            "&:last-child": { pb: 3 },
-                          }}
-                        >
-                          {isSelected && (
-                            <Box
-                              sx={{
-                                position: "absolute",
-                                top: 8,
-                                right: 8,
-                                backgroundColor: palette.brand.primary,
-                                borderRadius: "50%",
-                                width: 20,
-                                height: 20,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <Check size={12} color={palette.background.main} strokeWidth={3} />
-                            </Box>
-                          )}
-
-                          <Box
-                            sx={{
-                              "display": "flex",
-                              "alignItems": "center",
-                              "justifyContent": "center",
-                              "width": 40,
-                              "height": 40,
-                              "mb": 1.5,
-                              "& svg": {
-                                width: 32,
-                                height: 32,
-                              },
-                            }}
-                          >
-                            <Logo />
-                          </Box>
-
-                          <Typography
-                            sx={{
-                              fontSize: "12px",
-                              fontWeight: isSelected ? 600 : 500,
-                              color: isSelected ? palette.brand.primary : palette.text.secondary,
-                              textAlign: "center",
-                            }}
-                          >
-                            {provider.name}
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Box>
+            <ProviderPicker
+              providers={MODEL_PROVIDERS}
+              value={newModel.accessMethod}
+              onChange={(id) =>
+                setNewModel((prev) => ({ ...prev, accessMethod: id, modelName: "" }))
+              }
+            />
 
             {/* Model Selection */}
             {newModel.accessMethod && (

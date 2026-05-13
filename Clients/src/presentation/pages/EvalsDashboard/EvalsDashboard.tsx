@@ -1,16 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import {
-  Box,
-  Stack,
-  Typography,
-  Select,
-  MenuItem,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-} from "@mui/material";
+import { Box, Stack, Typography, Select, MenuItem, Button, Card, CardContent } from "@mui/material";
 import { Check } from "lucide-react";
 import {
   FlaskConical,
@@ -68,6 +58,7 @@ import VWChip from "../../components/Chip";
 import ConfirmationModal from "../../components/Dialogs/ConfirmationModal";
 import SelectableCard from "../../components/SelectableCard";
 import { palette } from "../../themes/palette";
+import ProviderPicker from "../../components/Inputs/ProviderPicker";
 
 // Import provider logos
 import { ReactComponent as OpenAILogo } from "../../assets/icons/openai_logo.svg";
@@ -119,14 +110,14 @@ import type { DeepEvalProject } from "./types";
 let hasLoadedEvalsBefore = false;
 
 const LLM_PROVIDERS = [
-  { _id: "openrouter", name: "OpenRouter", Logo: OpenRouterLogo },
-  { _id: "openai", name: "OpenAI", Logo: OpenAILogo },
-  { _id: "anthropic", name: "Anthropic", Logo: AnthropicLogo },
-  { _id: "google", name: "Gemini", Logo: GeminiLogo },
-  { _id: "xai", name: "xAI", Logo: XAILogo },
-  { _id: "mistral", name: "Mistral", Logo: MistralLogo },
-  { _id: "huggingface", name: "Hugging Face", Logo: HuggingFaceLogo },
-  { _id: "custom", name: "Custom", Logo: BuildIcon },
+  { id: "openrouter", name: "OpenRouter", Logo: OpenRouterLogo },
+  { id: "openai", name: "OpenAI", Logo: OpenAILogo },
+  { id: "anthropic", name: "Anthropic", Logo: AnthropicLogo },
+  { id: "google", name: "Gemini", Logo: GeminiLogo },
+  { id: "xai", name: "xAI", Logo: XAILogo },
+  { id: "mistral", name: "Mistral", Logo: MistralLogo },
+  { id: "huggingface", name: "Hugging Face", Logo: HuggingFaceLogo },
+  { id: "custom", name: "Custom", Logo: BuildIcon },
 ];
 
 /**
@@ -511,7 +502,7 @@ export default function EvalsDashboard() {
 
   // Get provider display name
   const getProviderDisplayName = (provider: string): string => {
-    const providerObj = LLM_PROVIDERS.find((p) => p._id === provider);
+    const providerObj = LLM_PROVIDERS.find((p) => p.id === provider);
     return providerObj?.name || provider.charAt(0).toUpperCase() + provider.slice(1);
   };
 
@@ -1389,7 +1380,7 @@ export default function EvalsDashboard() {
               ) : (
                 <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {llmApiKeys.map((key) => {
-                    const providerConfig = LLM_PROVIDERS.find((p) => p._id === key.provider);
+                    const providerConfig = LLM_PROVIDERS.find((p) => p.id === key.provider);
                     const ProviderLogo = providerConfig?.Logo;
                     return (
                       <Collapse
@@ -2171,7 +2162,7 @@ export default function EvalsDashboard() {
         title={isEditingApiKey ? "Edit API key" : "Add API key"}
         description={
           isEditingApiKey
-            ? `Update the API key for ${LLM_PROVIDERS.find((p) => p._id === selectedProvider)?.name || selectedProvider}. Your keys are encrypted and stored securely.`
+            ? `Update the API key for ${LLM_PROVIDERS.find((p) => p.id === selectedProvider)?.name || selectedProvider}. Your keys are encrypted and stored securely.`
             : "Configure API keys for LLM providers to run evaluations. Your keys are encrypted and stored securely."
         }
         onSubmit={handleAddApiKey}
@@ -2191,131 +2182,14 @@ export default function EvalsDashboard() {
         <Stack spacing={3}>
           {/* Provider Selection Grid - show ALL providers (hidden when editing) */}
           {!isEditingApiKey && (
-            <Box>
-              <Typography
-                sx={{ mb: 2, fontSize: "14px", fontWeight: 500, color: palette.text.secondary }}
-              >
-                Select Provider
-              </Typography>
-              <Grid container spacing={1.5}>
-                {LLM_PROVIDERS.map((provider) => {
-                  const { Logo } = provider;
-                  const isSelected = selectedProvider === provider._id;
-                  const hasKey = llmApiKeys.some((k) => k.provider === provider._id);
-
-                  return (
-                    <Grid size={{ xs: 4, sm: 4 }} key={provider._id}>
-                      <Card
-                        onClick={() => handleProviderSelect(provider._id)}
-                        sx={{
-                          "cursor": "pointer",
-                          "border": "1px solid",
-                          "borderColor": isSelected ? palette.brand.primary : palette.border.dark,
-                          "backgroundColor": palette.background.main,
-                          "boxShadow": "none",
-                          "transition": "all 0.2s ease",
-                          "position": "relative",
-                          "height": "100%",
-                          "&:hover": {
-                            borderColor: palette.brand.primary,
-                            boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
-                          },
-                        }}
-                      >
-                        <CardContent
-                          sx={{
-                            "textAlign": "center",
-                            "py": 3,
-                            "px": 2,
-                            "height": "100%",
-                            "display": "flex",
-                            "flexDirection": "column",
-                            "alignItems": "center",
-                            "justifyContent": "center",
-                            "&:last-child": { pb: 3 },
-                          }}
-                        >
-                          {isSelected && (
-                            <Box
-                              sx={{
-                                position: "absolute",
-                                top: 8,
-                                right: 8,
-                                backgroundColor: palette.brand.primary,
-                                borderRadius: "50%",
-                                width: 20,
-                                height: 20,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <Check size={12} color={palette.background.main} strokeWidth={3} />
-                            </Box>
-                          )}
-
-                          {/* Configured badge */}
-                          {hasKey && !isSelected && (
-                            <Box
-                              sx={{
-                                position: "absolute",
-                                top: 6,
-                                left: 6,
-                                backgroundColor: palette.status.success.bg,
-                                borderRadius: "4px",
-                                px: 0.75,
-                                py: 0.25,
-                              }}
-                            >
-                              <Typography
-                                sx={{
-                                  fontSize: "9px",
-                                  fontWeight: 600,
-                                  color: palette.status.success.text,
-                                  textTransform: "uppercase",
-                                }}
-                              >
-                                Active
-                              </Typography>
-                            </Box>
-                          )}
-
-                          {/* Provider Logo */}
-                          <Box
-                            sx={{
-                              "display": "flex",
-                              "alignItems": "center",
-                              "justifyContent": "center",
-                              "width": 40,
-                              "height": 40,
-                              "mb": 1.5,
-                              "& svg": {
-                                width: 32,
-                                height: 32,
-                              },
-                            }}
-                          >
-                            <Logo />
-                          </Box>
-
-                          {/* Provider Name */}
-                          <Typography
-                            sx={{
-                              fontSize: "12px",
-                              fontWeight: isSelected ? 600 : 500,
-                              color: isSelected ? palette.brand.primary : palette.text.secondary,
-                              textAlign: "center",
-                            }}
-                          >
-                            {provider.name}
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Box>
+            <ProviderPicker
+              providers={LLM_PROVIDERS}
+              value={selectedProvider}
+              onChange={handleProviderSelect}
+              label="Select Provider"
+              configuredProviders={llmApiKeys.map((k) => k.provider)}
+              gridColumns={{ xs: 4, sm: 4 }}
+            />
           )}
 
           {/* API Key Input */}
@@ -2330,7 +2204,7 @@ export default function EvalsDashboard() {
                 <Typography
                   sx={{ fontSize: "13px", fontWeight: 500, color: palette.text.secondary }}
                 >
-                  API key for {LLM_PROVIDERS.find((p) => p._id === selectedProvider)?.name}
+                  API key for {LLM_PROVIDERS.find((p) => p.id === selectedProvider)?.name}
                 </Typography>
                 {llmApiKeys.some((k) => k.provider === selectedProvider) && (
                   <Typography sx={{ fontSize: "11px", color: palette.text.tertiary }}>
@@ -2342,7 +2216,7 @@ export default function EvalsDashboard() {
                 label=""
                 value={newApiKey}
                 onChange={(e) => handleApiKeyInputChange(e.target.value)}
-                placeholder={`Enter your ${LLM_PROVIDERS.find((p) => p._id === selectedProvider)?.name || ""} API key...`}
+                placeholder={`Enter your ${LLM_PROVIDERS.find((p) => p.id === selectedProvider)?.name || ""} API key...`}
                 type="password"
                 autoComplete="one-time-code"
                 error={apiKeyError || ""}

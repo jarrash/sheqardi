@@ -3,9 +3,6 @@ import {
   Box,
   Typography,
   Stack,
-  Card,
-  CardContent,
-  Grid,
   Button,
   Divider,
   Select,
@@ -40,6 +37,7 @@ import Checkbox from "../../components/Inputs/Checkbox";
 import Alert from "../../components/Alert";
 import Chip from "../../components/Chip";
 import { palette } from "../../themes/palette";
+import ProviderPicker from "../../components/Inputs/ProviderPicker";
 
 // Import provider logos
 import { ReactComponent as OpenAILogo } from "../../assets/icons/openai_logo.svg";
@@ -1227,116 +1225,22 @@ export default function NewExperimentModal({
                 </Typography>
               </Box>
             ) : (
-              <Box>
-                <Typography
-                  sx={{ mb: 2.5, fontSize: "14px", fontWeight: 500, color: palette.text.secondary }}
-                >
-                  Model provider
-                </Typography>
-                <Grid container spacing={1.5}>
-                  {/* Show all providers */}
-                  {availableModelProviders.map((provider) => {
-                    const { Logo } = provider;
-                    const isSelected = config.model.accessMethod === provider.id;
-
-                    return (
-                      <Grid size={{ xs: 4, sm: 3 }} key={provider.id}>
-                        <Card
-                          onClick={() => {
-                            setSelectedSavedModelId(null); // deselect saved model when picking a provider
-                            setConfig((prev) => ({
-                              ...prev,
-                              model: {
-                                ...prev.model,
-                                accessMethod: provider.id as typeof config.model.accessMethod,
-                                name: "", // Reset model name when changing provider
-                              },
-                            }));
-                            setUseCustomModelName(false);
-                          }}
-                          sx={{
-                            "cursor": "pointer",
-                            "border": "1px solid",
-                            "borderColor": isSelected ? palette.brand.primary : palette.border.dark,
-                            "backgroundColor": palette.background.main,
-                            "boxShadow": "none",
-                            "transition": "all 0.2s ease",
-                            "position": "relative",
-                            "height": "100%",
-                            "&:hover": {
-                              borderColor: palette.brand.primary,
-                              boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
-                            },
-                          }}
-                        >
-                          <CardContent
-                            sx={{
-                              "textAlign": "center",
-                              "py": 3,
-                              "px": 2,
-                              "height": "100%",
-                              "display": "flex",
-                              "flexDirection": "column",
-                              "alignItems": "center",
-                              "justifyContent": "center",
-                              "&:last-child": { pb: 3 },
-                            }}
-                          >
-                            {isSelected && (
-                              <Box
-                                sx={{
-                                  position: "absolute",
-                                  top: 8,
-                                  right: 8,
-                                  backgroundColor: palette.brand.primary,
-                                  borderRadius: "50%",
-                                  width: 20,
-                                  height: 20,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                }}
-                              >
-                                <Check size={12} color={palette.background.main} strokeWidth={3} />
-                              </Box>
-                            )}
-
-                            {/* Provider Logo */}
-                            <Box
-                              sx={{
-                                "display": "flex",
-                                "alignItems": "center",
-                                "justifyContent": "center",
-                                "width": 40,
-                                "height": 40,
-                                "mb": 1.5,
-                                "& svg": {
-                                  width: 32,
-                                  height: 32,
-                                },
-                              }}
-                            >
-                              <Logo />
-                            </Box>
-
-                            {/* Provider Name */}
-                            <Typography
-                              sx={{
-                                fontSize: "12px",
-                                fontWeight: isSelected ? 600 : 500,
-                                color: isSelected ? palette.brand.primary : palette.text.secondary,
-                                textAlign: "center",
-                              }}
-                            >
-                              {provider.name}
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    );
-                  })}
-                </Grid>
-              </Box>
+              <ProviderPicker
+                providers={availableModelProviders}
+                value={config.model.accessMethod as string}
+                onChange={(id) => {
+                  setSelectedSavedModelId(null);
+                  setConfig((prev) => ({
+                    ...prev,
+                    model: {
+                      ...prev.model,
+                      accessMethod: id as typeof config.model.accessMethod,
+                      name: "",
+                    },
+                  }));
+                  setUseCustomModelName(false);
+                }}
+              />
             )}
 
             {/* Saved Models — toggle selection; bypasses provider/model UI when active */}
@@ -2609,116 +2513,18 @@ export default function NewExperimentModal({
                     Select a Provider
                   </Typography>
                 )}
-                <Box>
-                  <Grid container spacing="8px">
-                    {availableJudgeProviders.map((provider) => {
-                      const { Logo } = provider;
-                      const isSelected = config.judgeLlm.provider === provider.id;
-
-                      return (
-                        <Grid size={{ xs: 4, sm: 3 }} key={provider.id}>
-                          <Card
-                            onClick={() => {
-                              setConfig((prev) => ({
-                                ...prev,
-                                judgeLlm: {
-                                  ...prev.judgeLlm,
-                                  provider: provider.id,
-                                  model: "", // Reset model when changing provider
-                                },
-                              }));
-                              setUseCustomJudgeModelName(false);
-                            }}
-                            sx={{
-                              "cursor": "pointer",
-                              "border": "1px solid",
-                              "borderColor": isSelected
-                                ? palette.brand.primary
-                                : palette.border.dark,
-                              "backgroundColor": palette.background.main,
-                              "boxShadow": "none",
-                              "transition": "all 0.2s ease",
-                              "position": "relative",
-                              "height": "100%",
-                              "&:hover": {
-                                borderColor: palette.brand.primary,
-                                boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
-                              },
-                            }}
-                          >
-                            <CardContent
-                              sx={{
-                                "textAlign": "center",
-                                "py": 3,
-                                "px": 2,
-                                "height": "100%",
-                                "display": "flex",
-                                "flexDirection": "column",
-                                "alignItems": "center",
-                                "justifyContent": "center",
-                                "&:last-child": { pb: 3 },
-                              }}
-                            >
-                              {isSelected && (
-                                <Box
-                                  sx={{
-                                    position: "absolute",
-                                    top: 8,
-                                    right: 8,
-                                    backgroundColor: palette.brand.primary,
-                                    borderRadius: "50%",
-                                    width: 20,
-                                    height: 20,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <Check
-                                    size={12}
-                                    color={palette.background.main}
-                                    strokeWidth={3}
-                                  />
-                                </Box>
-                              )}
-
-                              {/* Provider Logo */}
-                              <Box
-                                sx={{
-                                  "display": "flex",
-                                  "alignItems": "center",
-                                  "justifyContent": "center",
-                                  "width": 40,
-                                  "height": 40,
-                                  "mb": 1.5,
-                                  "& svg": {
-                                    width: 32,
-                                    height: 32,
-                                  },
-                                }}
-                              >
-                                <Logo />
-                              </Box>
-
-                              {/* Provider Name */}
-                              <Typography
-                                sx={{
-                                  fontSize: "12px",
-                                  fontWeight: 500,
-                                  color: palette.text.secondary,
-                                  lineHeight: 1.3,
-                                  mt: "auto",
-                                }}
-                              >
-                                {provider.name}
-                              </Typography>
-                            </CardContent>
-                          </Card>
-                        </Grid>
-                      );
-                    })}
-                  </Grid>
-                </Box>
+                <ProviderPicker
+                  providers={availableJudgeProviders}
+                  value={config.judgeLlm.provider as string}
+                  onChange={(id) => {
+                    setConfig((prev) => ({
+                      ...prev,
+                      judgeLlm: { ...prev.judgeLlm, provider: id as ProviderType | "", model: "" },
+                    }));
+                    setUseCustomJudgeModelName(false);
+                  }}
+                  label="Select a Provider"
+                />
 
                 {config.judgeLlm.provider && (
                   <Box ref={formFieldsRef}>

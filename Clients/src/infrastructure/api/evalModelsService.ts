@@ -156,6 +156,23 @@ class EvalModelsService {
    * models for the given frontend provider ID (e.g. "openai", "google").
    * Results are cached for 5 minutes. Falls back to [] if AI Gateway is down.
    */
+  /**
+   * Fetch all LiteLLM provider names from the AI Gateway (used by ProviderPicker "Others").
+   * Returns a sorted, deduped list. Falls back to [] if gateway is down.
+   */
+  async getGatewayProviders(): Promise<string[]> {
+    try {
+      if (!_gatewayModelsCache || Date.now() > _gatewayModelsCacheExpiry) {
+        const response = await CustomAxios.get<GatewayModelsResponse>("/ai-gateway/v1/models");
+        _gatewayModelsCache = response.data;
+        _gatewayModelsCacheExpiry = Date.now() + GATEWAY_MODELS_TTL_MS;
+      }
+      return _gatewayModelsCache?.providers ?? [];
+    } catch {
+      return [];
+    }
+  }
+
   async getGatewayModelsForProvider(evalProvider: string): Promise<ModelInfo[]> {
     const litellmProvider = EVAL_TO_LITELLM[evalProvider];
     if (!litellmProvider) return [];
