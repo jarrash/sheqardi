@@ -7,6 +7,7 @@ Mounted at /internal/keys (behind internal key + tenant middleware).
 import logging
 
 import httpx
+import litellm
 from fastapi import APIRouter, HTTPException, Request
 
 from crud.api_keys import (
@@ -25,7 +26,12 @@ router = APIRouter(prefix="/keys", tags=["API Keys"])
 
 FRONTEND_URL = "http://localhost:5173"  # overridable via env if needed
 
-VALID_PROVIDERS = {"openai", "anthropic", "gemini", "xai", "mistral", "openrouter"}
+# Derived from LiteLLM's model cost table — stays in sync with supported providers automatically
+VALID_PROVIDERS: frozenset[str] = frozenset(
+    info.get("litellm_provider", "")
+    for info in litellm.model_cost.values()
+    if isinstance(info, dict) and info.get("litellm_provider")
+)
 
 # Provider verification endpoints (matches Express controller)
 PROVIDER_VERIFY_ENDPOINTS: dict[str, dict] = {
@@ -129,7 +135,7 @@ async def create_key(request: Request):
     if provider not in VALID_PROVIDERS:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid provider '{provider}'. Must be one of: {', '.join(sorted(VALID_PROVIDERS))}",
+            detail=f"Unknown provider '{provider}'. Must be a LiteLLM-supported provider (e.g. openai, anthropic, gemini, openrouter, bedrock).",
         )
 
     key = await create_api_key(org_id, provider, key_name, api_key)
