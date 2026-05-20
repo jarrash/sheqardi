@@ -7767,6 +7767,12 @@ export const translations: Record<string, Record<string, string>> = {
     "All members selected": "Alle Mitglieder ausgewählt",
     "No options": "Keine Optionen",
     "All tags selected": "Alle Tags ausgewählt",
+
+    // Changelog entry titles
+    "Training evidence uploads, governance score helper, and policy ownership":
+      "Schulungsnachweise hochladen, Governance-Score-Hilfe und Richtlinieneigentümer",
+    "EU AI Act control workflow, clearable selects, and AI advisor fix":
+      "EU-KI-Verordnung – Kontrollworkflow, leerbare Auswahlfelder und AI-Advisor-Fix",
   },
 
   fr: {
@@ -15463,5 +15469,11 @@ export const translations: Record<string, Record<string, string>> = {
     "All members selected": "Tous les membres sélectionnés",
     "No options": "Aucune option",
     "All tags selected": "Toutes les étiquettes sélectionnées",
+
+    // Changelog entry titles
+    "Training evidence uploads, governance score helper, and policy ownership":
+      "Téléversements de preuves de formation, aide sur le score de gouvernance et propriété des politiques",
+    "EU AI Act control workflow, clearable selects, and AI advisor fix":
+      "Règlement IA de l'UE — flux de contrôle, sélecteurs effaçables et correctif de l'AI advisor",
   },
 };
