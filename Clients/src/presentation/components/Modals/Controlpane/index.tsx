@@ -199,12 +199,12 @@ const CustomModal: React.FC<ICustomModalProps> = ({
             <AuditorFeedback
               activeSection={activeSection}
               feedback=""
-              onChange={() => {}}
+              onChange={(e) => console.log(e.target.value)}
               files={[]}
               deletedFilesIds={[]}
-              onDeletedFilesChange={() => {}}
+              onDeletedFilesChange={(ids) => console.log("Deleted Files:", ids)} // Add a handler
               uploadFiles={[]}
-              onUploadFilesChange={() => {}}
+              onUploadFilesChange={(files) => console.log("Uploaded Files:", files)} // Add a handler
             />
           )}
         </Box>
@@ -217,10 +217,20 @@ const CustomModal: React.FC<ICustomModalProps> = ({
           }}
         >
           <Stack gap={theme.spacing(4)} sx={{ display: "flex", flexDirection: "row" }}>
-            <Button variant="contained" onClick={() => {}} sx={buttonStyle} disableRipple>
+            <Button
+              variant="contained"
+              onClick={() => console.log("Previous Control clicked")}
+              sx={buttonStyle}
+              disableRipple
+            >
               &lt;- Previous Control
             </Button>
-            <Button variant="contained" onClick={() => {}} sx={buttonStyle} disableRipple>
+            <Button
+              variant="contained"
+              onClick={() => console.log("Next Control clicked")}
+              sx={buttonStyle}
+              disableRipple
+            >
               Next Control -&gt;
             </Button>
           </Stack>

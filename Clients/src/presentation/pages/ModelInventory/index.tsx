@@ -1751,12 +1751,21 @@ const ModelInventory: React.FC = () => {
 
   const handleEvidenceUploadModalSuccess = async (formData: EvidenceHubModel) => {
     try {
+      console.log("[ModelInventory.handleEvidenceUploadModalSuccess] formData received:", formData);
+      console.log(
+        "[ModelInventory.handleEvidenceUploadModalSuccess] evidence_files in payload:",
+        formData?.evidence_files,
+      );
       if (selectedEvidenceHub) {
         // Update existing Evidence
-        await updateEntityById({
+        const updateRes = await updateEntityById({
           routeUrl: `/evidenceHub/${selectedEvidenceHub.id}`,
           body: formData,
         });
+        console.log(
+          "[ModelInventory.handleEvidenceUploadModalSuccess] PATCH /evidenceHub response:",
+          updateRes,
+        );
 
         setEvidenceHubData((prev) =>
           prev.map((item) => (item.id === selectedEvidenceHub.id ? formData : item)),
@@ -1769,6 +1778,14 @@ const ModelInventory: React.FC = () => {
       } else {
         // Create new Evidence
         const response = await createEvidenceHub("/evidenceHub", formData);
+        console.log(
+          "[ModelInventory.handleEvidenceUploadModalSuccess] POST /evidenceHub response:",
+          response,
+        );
+        console.log(
+          "[ModelInventory.handleEvidenceUploadModalSuccess] response.data.evidence_files:",
+          (response as any)?.data?.evidence_files,
+        );
 
         if (response?.data) {
           setEvidenceHubData((prev) => [...prev, response.data]);

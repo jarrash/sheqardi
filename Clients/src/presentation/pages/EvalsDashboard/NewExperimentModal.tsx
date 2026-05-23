@@ -832,8 +832,11 @@ export default function NewExperimentModal({
         },
       };
 
+      console.log("Creating experiment:", experimentConfig);
+
       // Create experiment via API
       const response = await createExperiment(experimentConfig);
+      console.log("Experiment created:", response);
 
       // Optimistically notify parent so the table shows a pending row immediately
       if (onStarted && response?.experiment?.id) {
@@ -858,7 +861,11 @@ export default function NewExperimentModal({
           model: config.judgeLlm.model,
           endpointUrl: config.judgeLlm.endpointUrl || undefined,
         },
-      }).catch(() => {});
+      }).then((success) => {
+        if (success) {
+          console.log("Model preferences saved for next experiment");
+        }
+      });
 
       // Show success message
       setAlert({
