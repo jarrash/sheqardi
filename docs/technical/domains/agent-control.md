@@ -1,7 +1,7 @@
 # Agent Control — native tool-call governance
 
-> **Status:** Core shipped to `develop` (PRs #4078, #4083, #4084). Tool result capture +
-> events timeline + invocation drawer in PR #4103 (open). Last updated 2026-06-17.
+> **Status:** Shipped to `develop`. Core governance (PRs #4078, #4083, #4084); tool result
+> capture + events timeline + invocation drawer (PR #4103). Last updated 2026-06-17.
 
 Agent Control gates a coding agent's tool calls through the AI Gateway's guardrails,
 human-approval and audit machinery. It covers two entry paths that share one governance
@@ -68,7 +68,7 @@ approved → run, denied → block, timeout → `VW_APPROVAL_FAIL_MODE` (default
   the same name+args. (Migration `a0006` made `tool_id` nullable.)
 - An already-approved re-call **skips** the rate limiter so an approval is never wasted.
 
-## Tool result capture & events timeline (PR #4103)
+## Tool result capture & events timeline
 
 The PreToolUse hook records that a call happened and how it was adjudicated, but not what the
 tool *did*. A second, post-execution call captures the result, and every invocation carries an
@@ -140,7 +140,7 @@ No bespoke screens for governance: rules are authored in **Guardrails**, decisio
 **Agent Control** sidebar group. Servers/Tools keep "MCP" in their labels (genuinely
 MCP-protocol concepts).
 
-**Invocation drawer** (PR #4103): Activity rows are clickable and open a right-side drawer
+**Invocation drawer:** Activity rows are clickable and open a right-side drawer
 (`MCPInvocationDrawer.tsx`) showing the call's status, `tool_use_id`, agent key + session,
 arguments, the captured result (or "no result captured"), the events timeline, and a raw-JSON
 toggle. It reads `GET /ai-gateway/mcp/audit/logs/{id}`.
