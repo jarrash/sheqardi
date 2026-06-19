@@ -1,0 +1,22 @@
+# --- Web framework ---
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+pydantic>=2.6
+pydantic-settings>=2.2
+
+# --- Comparison / metrics ---
+jiwer>=3.0
+python-Levenshtein>=0.25
+
+# --- Speech-to-text engines (heavy) ---
+# These pull large model weights and CUDA/CPU runtimes. They are required for
+# real transcription but NOT needed to start the API or run the test suite
+# (engines load lazily and tests stub them out). Install when you need real STT:
+faster-whisper>=1.0
+openai-whisper>=20231117
+torch>=2.1
+
+# --- Testing ---
+pytest>=8.0
+httpx>=0.27
