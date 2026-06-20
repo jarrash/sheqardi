@@ -78,6 +78,40 @@ http://127.0.0.1:8000/docs
 
 ---
 
+## Models & network access
+
+On the **first** real transcription each engine downloads its model weights from
+**Hugging Face** (`huggingface.co`) and caches them under `~/.cache/huggingface`.
+After that, runs are offline.
+
+- **Local machine:** nothing to do — the download just works. Use the small-model
+  tip above to keep the first download light.
+- **Restricted / sandboxed environments** (including Claude Code on the web): the
+  network egress policy may block `huggingface.co`. You will see:
+
+  ```
+  LocalEntryNotFoundError: 403 Forbidden
+  Host not in allowlist: huggingface.co.
+  Add this host to your network egress settings to allow access.
+  ```
+
+  When this happens the engines **fail soft** and `POST /api/v1/transcribe`
+  returns HTTP **502** (`No engine produced a usable transcript`) — the app does
+  not crash. To enable real transcription, do one of:
+
+  1. **Allow the host.** Add `huggingface.co` (and `cdn-lfs.huggingface.co` /
+     `*.hf.co`) to the environment's network egress allowlist. For Claude Code on
+     the web, pick/configure a network policy that permits it — see
+     <https://code.claude.com/docs/en/claude-code-on-the-web>.
+  2. **Pre-cache the weights.** Mount or copy a populated
+     `~/.cache/huggingface` into the container, then run fully offline
+     (`export HF_HUB_OFFLINE=1`).
+
+> Already-downloaded? Set `HF_HUB_OFFLINE=1` to skip all network calls and use the
+> local cache only.
+
+---
+
 ## API
 
 ### `POST /api/v1/transcribe`
